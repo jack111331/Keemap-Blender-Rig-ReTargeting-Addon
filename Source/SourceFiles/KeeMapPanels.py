@@ -28,6 +28,7 @@ class KeemapPanelOne(KeeMapToolsPanel, bpy.types.Panel):
 
     def draw(self, context):
         layout = self.layout
+        scene = context.scene	
         KeeMap = bpy.context.scene.keemap_settings 
             
         #layout.label(text="Transfer Settings")
@@ -35,19 +36,36 @@ class KeemapPanelOne(KeeMapToolsPanel, bpy.types.Panel):
         layout.prop(KeeMap, "number_of_frames_to_apply")
         layout.prop(KeeMap, "keyframe_every_n_frames")
         row = layout.row(align=True)
-        row.prop(KeeMap, "source_rig_name")
+        row.prop_search(KeeMap, "source_rig_name", bpy.data, "armatures")
+        # row.prop(KeeMap, "source_rig_name")
         row.operator("wm.get_arm_name", text='', icon='EYEDROPPER').source = True
         row = layout.row(align=True)
-        row.prop(KeeMap, "destination_rig_name")
+        row.prop_search(KeeMap, "destination_rig_name", bpy.data, "armatures")
+        # row.prop(KeeMap, "destination_rig_name")
         row.operator("wm.get_arm_name", text='', icon='EYEDROPPER').source = False
         layout.prop(KeeMap, "bone_mapping_file")
+        row = layout.row(align=True)
+        layout.prop(KeeMap, "anim_file")
         row = layout.row(align=True)
         layout.prop(KeeMap, "bone_rotation_mode")
     
         row = layout.row()
         row.operator("wm.keemap_read_file")
         row.operator("wm.keemap_save_file")
+        row = layout.row()
+        row.prop(KeeMap, "clear_frames_within")
+        row = layout.row()
+        row.template_list("KEEMAP_BVH_UL_List", "The_Keemap_BVH_List", scene, "keemap_bvh_list", scene,"keemap_bvh_list_index")#, type='COMPACT')#, "index")
+        row = layout.row()
+        # TODO select folder to import all bvh filename
+        row.operator("wm.keemap_get_bvh_list")
+        row.operator("wm.keemap_read_file_auto_transfer")
         layout.operator("wm.perform_animation_transfer") 
+        row = layout.row()
+        row.prop(KeeMap, "cur_timestep")
+        row.prop(KeeMap, "total_timestep")
+        row = layout.row()
+        row.operator("wm.keemap_make_one_keyframe_copy") 
           
 class KeemapPanelTwo(KeeMapToolsPanel, bpy.types.Panel):
     bl_idname = "KEEMAP_PT_BONEMAPPING"

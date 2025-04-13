@@ -589,7 +589,26 @@ class PerformAnimationTransfer(bpy.types.Operator):
         else:
             SourceArm = bpy.data.objects[SourceArmName]
             DestArm  = bpy.data.objects[DestArmName]
-            
+
+            # Clear keyframe inbetween retargeting
+            DestArm.animation_data_clear()
+            # if KeeMap.clear_frames_within:
+            #     begining_frame = StartFrame
+            #     end_frame = StartFrame + KeeMap.number_of_frames_to_apply
+            #     for i in range(begining_frame, end_frame):
+            #         bpy.context.scene.frame_set(i)
+            #         Update()
+            #         currentFrame = bpy.context.scene.frame_current
+            #         # CODE FOR SETTING BONE POSITIONS:
+            #         for bone_idx, bone_settings in enumerate(bone_mapping_list):                    
+            #             DestinationBoneName = bone_mapping_list[bone_idx].DestinationBoneName
+            #             destination_bone =  DestArm.pose.bones[DestinationBoneName]
+            #             if destination_bone
+            #             destination_bone.keyframe_delete(data_path='location',frame=currentFrame)
+            #             destination_bone.keyframe_delete(data_path='rotation_euler',frame=currentFrame)
+            #             destination_bone.keyframe_delete(data_path='rotation_quaternion',frame=currentFrame)
+            #             destination_bone.keyframe_delete(data_path='scale',frame=currentFrame)
+
             i=0
             wm.progress_begin(0, 100)
             while (i < NumberOfFramesToTransfer):

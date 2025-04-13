@@ -46,7 +46,15 @@ class KeeMapSettings(bpy.types.PropertyGroup):
         maxlen=1024,
         subtype='FILE_PATH'
         )
-      
+        
+    anim_file: bpy.props.StringProperty(
+        name="Animation File to Read",
+        description="Select a File to Read In:",
+        default="",
+        maxlen=1024,
+        subtype='FILE_PATH'
+        )
+    
     bone_rotation_mode: bpy.props.EnumProperty(
         name="Rotation Mode",
         description="What mode to set rotation of bone in.  Quaternion more robust, Euler easier to understand but has gimbal lock.",
@@ -61,6 +69,30 @@ class KeeMapSettings(bpy.types.PropertyGroup):
         description="Use this checkbox to enable keyframing of this bone while testing.",
         default = False
         ) 
+    
+    clear_frames_within: bpy.props.BoolProperty(
+        name="KeyFrame clear",
+        description="Use this checkbox to clear keyframe within ranges.",
+        default = True
+        ) 
+
+    cur_timestep: bpy.props.FloatProperty(
+        name = "Current timestep",
+        description="Current timesteps",
+        default = 1.0,
+        step = 1.0,
+        min = 0.0,
+        max = 20.0
+    )
+    
+    total_timestep: bpy.props.FloatProperty(
+        name = "Total timesteps",
+        description="Total timesteps",
+        default = 10.0,
+        step = 1.0,
+        min = 0.0,
+        max = 20.0
+    )
 		
 	
 def register():
