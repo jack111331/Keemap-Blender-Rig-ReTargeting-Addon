@@ -2,3 +2,4 @@ __pycache__/
 *.py[cod]
 *$py.class
 assets/generate_motion.webm
+assets/trajectory_control.webm
