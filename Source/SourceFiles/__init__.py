@@ -29,7 +29,7 @@ bl_info = {
     "category": "Transfer Animation"
 }
  
-modulesNames = [ 'KeeMapSettings', 'KeeMapBoneSettings', 'KeeMapBoneList', 'KeeMapBVHSettings', 'KeeMapBoneOperators', 'KeeMapPanels']
+modulesNames = [ 'KeeMapSettings', 'KeeMapBoneSettings', 'KeeMapBoneList', 'KeeMapBVHSettings', 'KeeMapRenderSettings', 'KeeMapBoneOperators', 'KeeMapPanels']
   
 import bpy
 import sys

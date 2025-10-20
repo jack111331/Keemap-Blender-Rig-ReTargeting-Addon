@@ -54,6 +54,11 @@ class KeemapPanelOne(KeeMapToolsPanel, bpy.types.Panel):
         row.operator("wm.keemap_save_file")
         row = layout.row()
         row.prop(KeeMap, "clear_frames_within")
+        if scene.keemap_bvh_list_index < len(scene.keemap_bvh_list):
+            row = layout.row()
+            item = scene.keemap_bvh_list[scene.keemap_bvh_list_index]
+            row.prop(item, "filepath")
+            row.enabled = False
         row = layout.row()
         row.template_list("KEEMAP_BVH_UL_List", "The_Keemap_BVH_List", scene, "keemap_bvh_list", scene,"keemap_bvh_list_index")#, type='COMPACT')#, "index")
         row = layout.row()
@@ -66,6 +71,29 @@ class KeemapPanelOne(KeeMapToolsPanel, bpy.types.Panel):
         row.prop(KeeMap, "total_timestep")
         row = layout.row()
         row.operator("wm.keemap_make_one_keyframe_copy") 
+          
+class KeemapPanelRenderSeq(KeeMapToolsPanel, bpy.types.Panel):
+    bl_idname = "KEEMAP_PT_RENDERSEQ"
+    bl_label = "Render sequence"
+
+    def draw(self, context):
+        layout = self.layout    
+        scene = context.scene	
+        KeeMap_renderSetting = bpy.context.scene.keemap_render_setting            
+        row = layout.row()
+        row.template_list("KEEMAP_RENDERSEQ_UL_List", "The_Keemap_Render_List", scene, "keemap_render_list", scene,"keemap_render_list_index")#, type='COMPACT')#, "index")
+        row = layout.row() 
+        row.operator('keemap_render_list.new_item', text='Add from selected motion') 
+        row.operator('keemap_render_list.delete_item', text='REMOVE') 
+        row = layout.row() 
+        row.operator('keemap_render_list.move_item', text='UP').direction = 'UP' 
+        row.operator('keemap_render_list.move_item', text='DOWN').direction = 'DOWN'
+        row = layout.row() 
+        row.operator('keemap_render_list.clear_item', text='CLEAR')
+        row = layout.row() 
+        row.prop(KeeMap_renderSetting, 'output_dir')
+        row = layout.row() 
+        row.operator('keemap_render_list.render_all', text='Render all')
           
 class KeemapPanelTwo(KeeMapToolsPanel, bpy.types.Panel):
     bl_idname = "KEEMAP_PT_BONEMAPPING"
@@ -149,6 +177,7 @@ class KeemapPanelTwo(KeeMapToolsPanel, bpy.types.Panel):
 
 def register():
     bpy.utils.register_class(KeemapPanelOne)
+    bpy.utils.register_class(KeemapPanelRenderSeq)
     bpy.utils.register_class(KeemapPanelTwo)
     bpy.utils.register_class(KeeMapToolsPanel)
 
@@ -156,4 +185,5 @@ def register():
 def unregister():
     bpy.utils.unregister_class(KeeMapToolsPanel)
     bpy.utils.unregister_class(KeemapPanelOne)
+    bpy.utils.unregister_class(KeemapPanelRenderSeq)
     bpy.utils.unregister_class(KeemapPanelTwo)

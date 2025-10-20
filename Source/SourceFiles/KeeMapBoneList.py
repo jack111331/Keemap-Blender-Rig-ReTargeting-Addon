@@ -14,6 +14,19 @@ class KEEMAP_BVH_UL_List(bpy.types.UIList):
             layout.alignment = 'CENTER' 
             layout.label(text="", icon = custom_icon) 
 
+class KEEMAP_RENDERSEQ_UL_List(bpy.types.UIList): 
+    """Demo UIList.""" 
+    def draw_item(self, context, layout, data, item, icon, active_data, active_propname):
+        # We could write some code to decide which icon to use here... 
+        custom_icon = 'BONE_DATA' 
+        
+        # Make sure your code supports all 3 layout types if 
+        if self.layout_type in {'DEFAULT', 'COMPACT'}: 
+            layout.label(text=item.name, icon = custom_icon) 
+        elif self.layout_type in {'GRID'}: 
+            layout.alignment = 'CENTER' 
+            layout.label(text="", icon = custom_icon) 
+
 class KEEMAP_BONE_UL_List(bpy.types.UIList): 
     """Demo UIList.""" 
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname):
@@ -223,6 +236,9 @@ class KEEMAP_LIST_OT_GetBVHList(bpy.types.Operator):
             bvh_entry = bvh_list[idx]
             bvh_entry.name = filename
             bvh_entry.filepath = os.path.join(self.directory, filename)
+            
+        if context.scene.keemap_bvh_list_index < len(filename_list):
+            context.scene.keemap_bvh_list_index = 0
 
         return{'FINISHED'}
     
@@ -370,6 +386,7 @@ class KEEMAP_LIST_OT_MakeOneKeyframeCopy(bpy.types.Operator):
 	
 def register():
     bpy.utils.register_class(KEEMAP_BVH_UL_List)
+    bpy.utils.register_class(KEEMAP_RENDERSEQ_UL_List)
     bpy.utils.register_class(KEEMAP_BONE_UL_List)
     bpy.utils.register_class(KEEMAP_LIST_OT_NewItem)
     bpy.utils.register_class(KEEMAP_LIST_OT_DeleteItem)
@@ -383,6 +400,7 @@ def register():
 
 def unregister():
     bpy.utils.unregister_class(KEEMAP_BVH_UL_List)
+    bpy.utils.unregister_class(KEEMAP_RENDERSEQ_UL_List)
     bpy.utils.unregister_class(KEEMAP_BONE_UL_List)
     bpy.utils.unregister_class(KEEMAP_LIST_OT_NewItem)
     bpy.utils.unregister_class(KEEMAP_LIST_OT_DeleteItem)
