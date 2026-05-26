@@ -72,6 +72,28 @@ class KeemapPanelOne(KeeMapToolsPanel, bpy.types.Panel):
         row = layout.row()
         row.operator("wm.keemap_make_one_keyframe_copy") 
           
+class KeemapPanelRenderStaticImg(KeeMapToolsPanel, bpy.types.Panel):
+    bl_idname = "KEEMAP_PT_RENDERSTATICIMG"
+    bl_label = "Render static image"
+
+    def draw(self, context):
+        layout = self.layout    
+        scene = context.scene	
+        KeeMap_renderStaticImgSetting = bpy.context.scene.keemap_render_static_img_setting            
+        row = layout.row()
+        # TODO
+        row.template_list("KEEMAP_RENDERSEQ_UL_List", "The_Keemap_Render_Static_Img_List", scene, "keemap_render_static_img_list", scene,"keemap_render_static_img_list_index")#, type='COMPACT')#, "index")
+        row = layout.row() 
+        row.operator('keemap_render_static_img_list.new_item', text='Add frame index for rendering static image') 
+        row.operator('keemap_render_static_img_list.delete_item', text='REMOVE') 
+        row = layout.row() 
+        row.operator('keemap_render_static_img_list.move_item', text='UP').direction = 'UP' 
+        row.operator('keemap_render_static_img_list.move_item', text='DOWN').direction = 'DOWN'
+        row = layout.row() 
+        row.operator('keemap_render_static_img_list.clear_item', text='CLEAR')
+        row = layout.row() 
+        row.operator('keemap_render_static_img_list.setup_render', text='Setup render')
+          
 class KeemapPanelRenderSeq(KeeMapToolsPanel, bpy.types.Panel):
     bl_idname = "KEEMAP_PT_RENDERSEQ"
     bl_label = "Render sequence"
@@ -79,7 +101,15 @@ class KeemapPanelRenderSeq(KeeMapToolsPanel, bpy.types.Panel):
     def draw(self, context):
         layout = self.layout    
         scene = context.scene	
-        KeeMap_renderSetting = bpy.context.scene.keemap_render_setting            
+        KeeMap_renderSetting = bpy.context.scene.keemap_render_setting     
+        row = layout.row()
+        if scene.keemap_render_list_index < len(scene.keemap_render_list):
+            row = layout.row()
+            item = scene.keemap_render_list[scene.keemap_render_list_index]
+            row.prop(item, "filepath")
+            row.enabled = False       
+            row = layout.row()
+            row.prop(item, "frame_number")
         row = layout.row()
         row.template_list("KEEMAP_RENDERSEQ_UL_List", "The_Keemap_Render_List", scene, "keemap_render_list", scene,"keemap_render_list_index")#, type='COMPACT')#, "index")
         row = layout.row() 
@@ -94,6 +124,49 @@ class KeemapPanelRenderSeq(KeeMapToolsPanel, bpy.types.Panel):
         row.prop(KeeMap_renderSetting, 'output_dir')
         row = layout.row() 
         row.operator('keemap_render_list.render_all', text='Render all')
+
+class KeemapPanelSpeedRefine(KeeMapToolsPanel, bpy.types.Panel):
+    bl_idname = "KEEMAP_PT_SPDRFN"
+    bl_label = "Refine generate motion speed"
+
+    def draw(self, context):
+        layout = self.layout    
+        scene = context.scene	
+        KeeMap_refine_speed_setting = bpy.context.scene.keemap_refine_speed_setting            
+        # row = layout.row()
+        # row.template_list("KEEMAP_RENDERSEQ_UL_List", "The_Keemap_Render_List", scene, "keemap_render_list", scene,"keemap_render_list_index")#, type='COMPACT')#, "index")
+        row = layout.row()
+        row.prop(KeeMap_refine_speed_setting, 'text_prompt')
+        row = layout.row()
+        row.prop(KeeMap_refine_speed_setting, 'target_joint')
+        row = layout.row() 
+        row.operator('keemap_t2m.gen_motion_from_text_prompt', text='Generate motion from text prompt') 
+
+class KeemapPanelOptmTraj(KeeMapToolsPanel, bpy.types.Panel):
+    bl_idname = "KEEMAP_PT_OPTMTRAJ"
+    bl_label = "Optimize trajectory"
+
+    def draw(self, context):
+        layout = self.layout    
+        scene = context.scene	
+        KeeMap_optm_traj_setting = bpy.context.scene.keemap_optm_traj_setting            
+        # row = layout.row()
+        # row.template_list("KEEMAP_RENDERSEQ_UL_List", "The_Keemap_Render_List", scene, "keemap_render_list", scene,"keemap_render_list_index")#, type='COMPACT')#, "index")
+        row = layout.row()
+        row.prop(KeeMap_optm_traj_setting, 'text_prompt')
+        row = layout.row()
+        row.prop_search(KeeMap_optm_traj_setting, "trajectory_obj", bpy.data, "objects")
+        row = layout.row()
+        row.prop(KeeMap_optm_traj_setting, 'target_joint')
+        row = layout.row()
+        row.prop_search(KeeMap_optm_traj_setting, "trajectory_obj_1", bpy.data, "objects")
+        row = layout.row()
+        row.prop(KeeMap_optm_traj_setting, 'target_joint_1')
+        row = layout.row() 
+        row.prop(KeeMap_optm_traj_setting, 'seed')
+        row = layout.row() 
+        row.operator('keemap_t2m.gen_motion_from_text_prompt', text='Generate motion from text prompt') 
+
           
 class KeemapPanelTwo(KeeMapToolsPanel, bpy.types.Panel):
     bl_idname = "KEEMAP_PT_BONEMAPPING"
@@ -177,7 +250,9 @@ class KeemapPanelTwo(KeeMapToolsPanel, bpy.types.Panel):
 
 def register():
     bpy.utils.register_class(KeemapPanelOne)
+    bpy.utils.register_class(KeemapPanelRenderStaticImg)
     bpy.utils.register_class(KeemapPanelRenderSeq)
+    bpy.utils.register_class(KeemapPanelOptmTraj)
     bpy.utils.register_class(KeemapPanelTwo)
     bpy.utils.register_class(KeeMapToolsPanel)
 
@@ -185,5 +260,7 @@ def register():
 def unregister():
     bpy.utils.unregister_class(KeeMapToolsPanel)
     bpy.utils.unregister_class(KeemapPanelOne)
+    bpy.utils.unregister_class(KeemapPanelOptmTraj)
+    bpy.utils.unregister_class(KeemapPanelRenderStaticImg)
     bpy.utils.unregister_class(KeemapPanelRenderSeq)
     bpy.utils.unregister_class(KeemapPanelTwo)

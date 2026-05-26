@@ -22,10 +22,10 @@ class KEEMAP_RENDERSEQ_UL_List(bpy.types.UIList):
         
         # Make sure your code supports all 3 layout types if 
         if self.layout_type in {'DEFAULT', 'COMPACT'}: 
-            layout.label(text=item.name, icon = custom_icon) 
+            layout.prop(item, "name", text="", emboss=False) 
         elif self.layout_type in {'GRID'}: 
             layout.alignment = 'CENTER' 
-            layout.label(text="", icon = custom_icon) 
+            layout.prop(item, "name", text="", emboss=False) 
 
 class KEEMAP_BONE_UL_List(bpy.types.UIList): 
     """Demo UIList.""" 
@@ -351,7 +351,9 @@ class KEEMAP_LIST_OT_SaveToFile(bpy.types.Operator):
 class KEEMAP_LIST_OT_MakeOneKeyframeCopy(bpy.types.Operator): 
     """Read in Bone Mapping File""" 
     bl_idname = "wm.keemap_make_one_keyframe_copy" 
-    bl_label = "Make one keyframe copy " 
+    bl_label = "Make one keyframe copy "
+    
+    duplicated_object_name: bpy.props.StringProperty()
 
     @classmethod 
     def poll(cls, context):
@@ -363,16 +365,16 @@ class KEEMAP_LIST_OT_MakeOneKeyframeCopy(bpy.types.Operator):
         origin_obj = context.active_object
         for child_obj in origin_obj.children:
             child_obj.select_set(True)        
+            child_obj["timestep"] = KeeMap.cur_timestep
         
         bpy.ops.object.mode_set(mode='OBJECT')
         bpy.ops.object.duplicate()
+        KEEMAP_LIST_OT_MakeOneKeyframeCopy.duplicated_object_name = context.active_object.name
         bpy.ops.object.mode_set(mode='POSE')
 
         bpy.ops.pose.propagate(mode='SELECTED_KEYS')        
 
         bpy.ops.object.mode_set(mode='OBJECT')
-        for child_obj in origin_obj.children:
-            child_obj["timestep"] = KeeMap.cur_timestep
                         
         KeeMap.cur_timestep += 1.0
         

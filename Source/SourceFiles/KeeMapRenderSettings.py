@@ -15,6 +15,11 @@ class KeeMapRenderListItem(bpy.types.PropertyGroup):
       #"""Group of properties representing a bone mapping from OpenPose to a Rig"""       
     name : bpy.props.StringProperty()
     filepath : bpy.props.StringProperty()
+    frame_number: bpy.props.IntProperty(
+        name="Total frame number",
+        description="Total frame number for rendering",
+        default=196,
+    )
 
 class KEEMAP_LIST_OT_Render_NewItem(bpy.types.Operator): 
     """Add a new item to the list.""" 
@@ -139,7 +144,8 @@ class KEEMAP_LIST_OT_Render_RenderAllItem(bpy.types.Operator):
             from pathlib import Path
             filename = Path(filename).with_suffix(".mp4")
             context.scene.render.filepath = os.path.join(context.scene.keemap_render_setting.output_dir, filename)
-            bpy.ops.render.render('INVOKE_DEFAULT', animation=True)
+            context.scene.frame_end = render_item.frame_number
+            bpy.ops.render.render('EXEC_DEFAULT', animation=True)
         return{'FINISHED'}
 
 def register():
